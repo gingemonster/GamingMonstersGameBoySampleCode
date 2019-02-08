@@ -49,7 +49,7 @@ UBYTE canplayermove(UINT8 newplayerx, UINT8 newplayery){
     // check if tile index, for top left, in background map is empty (0x00);
     result = MazeMap[tileindexTL] == blankmap[0];
 
-    // check for the two special locations, key and door
+    // check for the three special locations, key, door and exit
     if(tileindexTL==321){
         // colect key
         set_bkg_tiles(1, 16, 1, 1, blankmap);
