@@ -1,7 +1,7 @@
 #include <gb/gb.h>
 #include <stdio.h>
-#include "GameSprites.c"
 #include "GameCharacter.c"
+#include "GameSprites.c"
 
 struct GameCharacter ship;
 struct GameCharacter bug;
@@ -37,7 +37,7 @@ void setupship(){
     set_sprite_tile(3, 3);
     ship.spritids[3] = 3;
 
-    movegamecharacter(&ship,ship.x,ship.y);
+    movegamecharacter(&ship, ship.x, ship.y);
 }
 
 void setupbug(){
@@ -55,36 +55,37 @@ void setupbug(){
     bug.spritids[2] = 6;
     set_sprite_tile(7, 7);
     bug.spritids[3] = 7;
-    movegamecharacter(&bug,bug.x,bug.y);
+
+    movegamecharacter(&bug, bug.x, bug.y);
 }
 
 void main(){
     set_sprite_data(0, 8, GameSprites);
     setupship();
     setupbug();
-    
+
     SHOW_SPRITES;
     DISPLAY_ON;
 
     while(1){
-        if(joypad() & J_LEFT){
-            ship.x -= 2;
-            movegamecharacter(&ship,ship.x,ship.y);
-        }
-        if(joypad() & J_RIGHT){
-            ship.x += 2;
-            movegamecharacter(&ship,ship.x,ship.y);
-        }
-        bug.y += 5;
+       if(joypad() & J_LEFT){
+           ship.x -= 2;
+           movegamecharacter(&ship, ship.x, ship.y);
+       }
+       if(joypad() & J_RIGHT){
+           ship.x += 2;
+           movegamecharacter(&ship, ship.x, ship.y);
+       }
 
-        // check if bug at bottom of screen, if so reset position to top
-        if(bug.y >= 144){
-            bug.y = 0;
-            bug.x = ship.x; // be nasty and chase the ship!
-        }
+       bug.y += 5;
 
-        movegamecharacter(&bug,bug.x,bug.y);
+       if(bug.y >= 144){
+           bug.y=0;
+           bug.x = ship.x;
+       }
 
-        performantdelay(5);
+       movegamecharacter(&bug,bug.x,bug.y);
+
+       performantdelay(5);      
     }
 }

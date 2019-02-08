@@ -3,8 +3,8 @@
 #include "GameSprites.c"
 #include "GameCharacter.c"
 
-struct GameCharacter ship;
-struct GameCharacter bug;
+GameCharacter ship;
+GameCharacter bug;
 UBYTE spritesize = 8;
 
 void performantdelay(UINT8 numloops){
@@ -14,7 +14,7 @@ void performantdelay(UINT8 numloops){
     }     
 }
 
-void movegamecharacter(struct GameCharacter* character, UINT8 x, UINT8 y){
+void movegamecharacter(GameCharacter* character, UINT8 x, UINT8 y){
     move_sprite(character->spritids[0], x, y);
     move_sprite(character->spritids[1], x + spritesize, y);
     move_sprite(character->spritids[2], x, y + spritesize);
@@ -58,7 +58,7 @@ void setupbug(){
     movegamecharacter(&bug,bug.x,bug.y);
 }
 
-BYTE checkcollisions(struct GameCharacter*  one, struct GameCharacter*  two){
+BYTE checkcollisions(GameCharacter* one, GameCharacter* two){
     return ((one->x >= two->x && one->x <= two->x + two->width) && (one->y >= two->y && one->y <= two->y + two->height)) || ((two->x >= one->x && two->x <= one->x + one->width) && (two->y >= one->y && two->y <= one->y + one->height));
 }
 
