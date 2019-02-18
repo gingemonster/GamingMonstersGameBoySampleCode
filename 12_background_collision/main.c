@@ -6,10 +6,7 @@
 
 const char blankmap[1] = {0x00};
 UINT8 playerlocation[2];
-UBYTE haskey;
-UBYTE debug;
-UBYTE gamerunning = 1;
-
+UBYTE debug, haskey, gamerunning;
 
 void performantdelay(UINT8 numloops){
     UINT8 i;
@@ -18,25 +15,10 @@ void performantdelay(UINT8 numloops){
     }     
 }
 
-void animatesprite(UINT8 spriteindex, INT8 movex, INT8 movey){
-    while(movex!=0){
-        scroll_sprite(spriteindex, movex < 0 ? -1 : 1, 0);
-        movex += movex < 0 ? 1 : -1;
-        wait_vbl_done();
-    }
-    while(movey!=0){
-        scroll_sprite(spriteindex, 0, movey < 0 ? -1 : 1);
-        movey += movey < 0 ? 1 : -1;
-        wait_vbl_done();
-    }    
-}
-
 UBYTE canplayermove(UINT8 newplayerx, UINT8 newplayery){
-    UBYTE result;
-    // get background tile index, can be > 255 so use UINT16
     UINT16 indexTLx, indexTLy, tileindexTL;
+    UBYTE result;
 
-    // get index for all corners of sprite
     indexTLx = (newplayerx - 8) / 8;
     indexTLy = (newplayery - 16) / 8;
     tileindexTL = 20 * indexTLy + indexTLx;
@@ -44,34 +26,44 @@ UBYTE canplayermove(UINT8 newplayerx, UINT8 newplayery){
     if(debug){
         printf("%u %u\n",(UINT16)(newplayerx),(UINT16)(newplayery));
         printf("%u %u %u\n",(UINT16)indexTLx,(UINT16)indexTLy,(UINT16)tileindexTL);   
-    }   
-    
-    // check if tile index, for top left, in background map is empty (0x00);
+    }    
+
     result = MazeMap[tileindexTL] == blankmap[0];
 
-    // check for the three special locations, key, door and exit
     if(tileindexTL==321){
-        // colect key
-        set_bkg_tiles(1, 16, 1, 1, blankmap);
-        MazeMap[321] = 0;
+        // collect key
+        set_bkg_tiles(1,16,1,1,blankmap);
         haskey = 1;
         result = 1;
     }
     else if(tileindexTL==263 && haskey){
         // open door
-        set_bkg_tiles(3, 13, 1, 1, blankmap);
-        MazeMap[263] = 0;
+        set_bkg_tiles(3,13,1,1,blankmap);
         result = 1;
     }
-    else if (tileindexTL==340){
+    else if(tileindexTL==340){
         // finish game
         gamerunning = 0;
         HIDE_SPRITES;
         printf("\n \n \n \n \n \n \n \n \n      YOU WIN!");
+        result = 1;        
         result = 1;
     }
 
     return result;
+}
+
+void animatesprite(UINT8 spriteindex, INT8 movex, INT8 movey){
+    while(movex!=0){
+        scroll_sprite(spriteindex, movex < 0 ? -1 : 1, 0);
+        movex += (movex < 0 ? 1 : -1);
+        wait_vbl_done();
+    }
+    while(movey!=0){
+        scroll_sprite(spriteindex, 0, movey < 0 ? -1 : 1);
+        movey += movey < 0 ? 1 : -1;
+        wait_vbl_done();
+    }    
 }
 
 void main(){
@@ -87,6 +79,8 @@ void main(){
 
     move_sprite(0,playerlocation[0],playerlocation[1]);
 
+    gamerunning = 1;
+
     SHOW_SPRITES;
     SHOW_BKG;
     DISPLAY_ON;
@@ -94,7 +88,7 @@ void main(){
     while(gamerunning){
         if(joypad() & J_A){
             debug = 1;
-        }
+        }        
         if(joypad() & J_LEFT){
             if(canplayermove(playerlocation[0]-8,playerlocation[1])){
                 playerlocation[0] -= 8;
@@ -102,7 +96,7 @@ void main(){
             }
         }
         else if(joypad() & J_RIGHT){
-            if(canplayermove(playerlocation[0]+8,playerlocation[1])){
+            if(canplayermove(playerlocation[0]+8,playerlocation[1])){            
                 playerlocation[0] += 8;
                 animatesprite(0,8,0);
             }
@@ -119,6 +113,7 @@ void main(){
                 animatesprite(0,0,8);
             }
         }
-        performantdelay(4);
+        
+        performantdelay(6);
     }
 }

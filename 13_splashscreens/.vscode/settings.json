@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "mario_data.h": "c",
+        "mario_map.h": "c"
+    }
+}
