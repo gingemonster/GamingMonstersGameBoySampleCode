@@ -14,7 +14,7 @@ void performantdelay(UINT8 numloops){
 }
 
 void fadeout(){
-    for(i=0;i!=4;i++){
+	for(i=0;i<4;i++){
 		switch(i){
 			case 0:
 				BGP_REG = 0xE4;
@@ -26,28 +26,28 @@ void fadeout(){
 				BGP_REG = 0xFE;
 				break;
 			case 3:
-				BGP_REG = 0xFF;
-				break;												
+				BGP_REG = 0xFF;	
+				break;						
 		}
-		performantdelay(50);
-	}	
+		performantdelay(10);
+	}
 }
 
 void fadein(){
-	for(i=1;i!=4;i++){
+	for(i=0;i<3;i++){
 		switch(i){
-			case 1:
+			case 0:
 				BGP_REG = 0xFE;
 				break;
-			case 2:
+			case 1:
 				BGP_REG = 0xF9;
 				break;
-			case 3:
+			case 2:
 				BGP_REG = 0xE4;
-				break;											
+				break;					
 		}
-		performantdelay(50);
-	}	
+		performantdelay(10);
+	}
 }
 
 void main(){
@@ -58,10 +58,12 @@ void main(){
     DISPLAY_ON;
 
     waitpad(J_START);
-    fadeout();
+
+	fadeout();
 
     set_bkg_data(0, 4, MazeSprites);
-    set_bkg_tiles(0, 0, 20, 18, MazeMap);  
+    set_bkg_tiles(0, 0, 20, 18, MazeMap);  	
 
-    fadein();
+	fadein();
+   
 }
