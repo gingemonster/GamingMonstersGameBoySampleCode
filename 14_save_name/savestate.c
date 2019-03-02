@@ -1,0 +1,1 @@
+unsigned char playername[18];

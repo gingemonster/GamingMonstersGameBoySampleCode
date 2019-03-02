@@ -6,13 +6,16 @@
 #include "cursor.c"
 #include "welcomemap.c"
 
+extern unsigned char playername[18];
 struct Cursor cursor;
 const UINT8 mincursorx = 12;
 const UINT8 mincursory = 80;
 const UINT8 maxcursorx = 156;
 const UINT8 maxcursory = 128;
 
-unsigned char playername[18];
+UINT8 i;
+UBYTE namenotempty = 0;
+
 UINT8 namecharacterindex;
 UBYTE keydown;
 UBYTE playerhasname;
@@ -32,11 +35,18 @@ UBYTE isWithinKeyboard(UINT8 x, UINT8 y){
     return x >= mincursorx && x <= maxcursorx && y >= mincursory && y <= maxcursory;
 }
 
+void resetplayername(){
+    for(i=0;i!=18;i++){
+        playername[i] = 0x00;
+    }
+    playerhasname = 0;
+}
+
 void addtoplayername(struct Cursor* cursor){
     // work out index of select character in charactermap
     UINT8 characterindex = cursor->row * 10 + cursor->col + 1; // add one as space is first character in sprites
 
-    if(namecharacterindex >= 17) return; // max name length reached
+    if(namecharacterindex == 18) return; // max name length reached
 
     playername[namecharacterindex] = characterindex;
     namecharacterindex++;
@@ -83,6 +93,8 @@ void updateplayername(struct Cursor* cursor){
 }
 
 void askfornamescreen(){
+    resetplayername();
+
     // load cursor sprite
     set_sprite_data(0, 1, sprites);
     set_sprite_tile(0, 0);
@@ -100,6 +112,8 @@ void askfornamescreen(){
     SHOW_BKG;
     SHOW_SPRITES;
     DISPLAY_ON;
+
+    drawplayername();
     
 
     while(!playerhasname){
@@ -148,9 +162,20 @@ void askfornamescreen(){
         }
         performantdelay(2);
     }
+    scroll_bkg(4,0); // reset bg position
+    return;
 }
 
 void main(){
-    askfornamescreen();
+    ENABLE_RAM_MBC1;
+
+    // there are 40 different characters on kb
+    // so if value greater than 40 (hex 28) cant be valid data
+    // so name must be empty
+    if(playername[0]>0x28){
+
+        askfornamescreen();
+    }
     sayhelloscreen();
+    DISABLE_RAM_MBC1;
 }
