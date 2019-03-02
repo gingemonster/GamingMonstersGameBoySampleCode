@@ -4,6 +4,7 @@
 #include "sprites.c"
 #include "keyboardmap.c"
 #include "cursor.c"
+#include "welcomemap.c"
 
 struct Cursor cursor;
 const UINT8 mincursorx = 12;
@@ -14,6 +15,7 @@ const UINT8 maxcursory = 128;
 unsigned char playername[18];
 UINT8 namecharacterindex;
 UBYTE keydown;
+UBYTE playerhasname;
 
 void performantdelay(UINT8 numloops){
     UINT8 ii;
@@ -29,24 +31,6 @@ UBYTE isWithinKeyboard(UINT8 x, UINT8 y){
     }
     return x >= mincursorx && x <= maxcursorx && y >= mincursory && y <= maxcursory;
 }
-
-// void printcharacter(struct Cursor* cursor){
-//     // work out index of select character in charactermap
-//     UINT8 characterindex = cursor->row * 10 + cursor->col + 1; // add one as space is first character in sprites
-//     unsigned char characterchosen[1];
-
-//     if(namecharacterindex >= 17) return; // max name length reached
-
-//     // printf("%u %u %u", (UINT16)cursor->col, (UINT16)cursor->row, (UINT16)characterindex);
-//     // printf("%c\n",charactermap[characterindex]);
-//     playername[namecharacterindex] = characterindex;
-
-    
-//     characterchosen[0] = characterindex;
-//     set_bkg_tiles(1 + namecharacterindex,4, 1, 1, characterchosen);
-    
-//     namecharacterindex++;
-// }
 
 void addtoplayername(struct Cursor* cursor){
     // work out index of select character in charactermap
@@ -69,6 +53,18 @@ void drawplayername(){
     set_bkg_tiles(1, 4, 18, 1, playername);
 }
 
+void sayhelloscreen(){
+    set_bkg_data(0, 45, keyboarddata);
+
+    set_bkg_tiles(0, 0, 20, 18, welcomemap);
+
+    drawplayername();
+
+    SHOW_BKG;
+    HIDE_SPRITES;
+    DISPLAY_ON;
+}
+
 void updateplayername(struct Cursor* cursor){
     // check if cursor at delete or done
     if(cursor->col==8 && cursor->row == 4){
@@ -78,7 +74,7 @@ void updateplayername(struct Cursor* cursor){
     }
     else if (cursor->col==9 && cursor->row == 4){
         // player finished
-        printf("done");
+        playerhasname = 1;
     }
     else{
         addtoplayername(cursor);
@@ -86,11 +82,10 @@ void updateplayername(struct Cursor* cursor){
     }
 }
 
-void main(){
+void askfornamescreen(){
     // load cursor sprite
     set_sprite_data(0, 1, sprites);
     set_sprite_tile(0, 0);
-    
 
     cursor.x = 12;
     cursor.y = 80;
@@ -107,7 +102,7 @@ void main(){
     DISPLAY_ON;
     
 
-    while(1){
+    while(!playerhasname){
         if(keydown){
             waitpadup();
             keydown = 0;
@@ -153,4 +148,9 @@ void main(){
         }
         performantdelay(2);
     }
+}
+
+void main(){
+    askfornamescreen();
+    sayhelloscreen();
 }
