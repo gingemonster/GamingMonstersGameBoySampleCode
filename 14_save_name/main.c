@@ -14,11 +14,10 @@ const UINT8 maxcursorx = 156;
 const UINT8 maxcursory = 128;
 
 UINT8 i;
-UBYTE namenotempty = 0;
-
 UINT8 namecharacterindex;
-UBYTE keydown;
-UBYTE playerhasname;
+UBYTE keydown, playerhasname;
+
+void main();
 
 void performantdelay(UINT8 numloops){
     UINT8 ii;
@@ -73,6 +72,11 @@ void sayhelloscreen(){
     SHOW_BKG;
     HIDE_SPRITES;
     DISPLAY_ON;
+
+    waitpad(J_SELECT);
+    // invalidate the first character in save
+    playername[0] = 0xFF;
+    main();
 }
 
 void updateplayername(struct Cursor* cursor){
@@ -172,8 +176,8 @@ void main(){
     // there are 40 different characters on kb
     // so if value greater than 40 (hex 28) cant be valid data
     // so name must be empty
-    if(playername[0]>0x28){
 
+    if(playername[0]>0x28){
         askfornamescreen();
     }
     sayhelloscreen();
