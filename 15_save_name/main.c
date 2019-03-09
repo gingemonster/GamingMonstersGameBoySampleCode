@@ -1,23 +1,20 @@
 #include <gb/gb.h>
-#include <stdio.h>
 #include "keyboarddata.c"
-#include "sprites.c"
 #include "keyboardmap.c"
+#include "sprites.c"
 #include "cursor.c"
 #include "welcomemap.c"
 
-extern unsigned char playername[18];
+extern UINT8 playername[18];
 struct Cursor cursor;
+UBYTE keydown;
 const UINT8 mincursorx = 12;
 const UINT8 mincursory = 80;
 const UINT8 maxcursorx = 156;
 const UINT8 maxcursory = 128;
+UINT8 namecharacterindex, i;
 
-UINT8 i;
-UINT8 namecharacterindex;
-UBYTE keydown, playerhasname;
-
-void main();
+UBYTE playerhasname;
 
 void performantdelay(UINT8 numloops){
     UINT8 ii;
@@ -26,26 +23,10 @@ void performantdelay(UINT8 numloops){
     }     
 }
 
-UBYTE isWithinKeyboard(UINT8 x, UINT8 y){
-    // check special locations at bottom of keyboard
-    if(x==140 && y==144 || x==156 && y==144){
-        return 1;
-    }
-    return x >= mincursorx && x <= maxcursorx && y >= mincursory && y <= maxcursory;
-}
-
-void resetplayername(){
-    for(i=0;i!=18;i++){
-        playername[i] = 0x00;
-    }
-    playerhasname = 0;
-}
-
 void addtoplayername(struct Cursor* cursor){
-    // work out index of select character in charactermap
-    UINT8 characterindex = cursor->row * 10 + cursor->col + 1; // add one as space is first character in sprites
+    UINT8 characterindex = cursor->row * 10 + cursor->col + 1;
 
-    if(namecharacterindex == 18) return; // max name length reached
+    if(namecharacterindex == 18) return;
 
     playername[namecharacterindex] = characterindex;
     namecharacterindex++;
@@ -54,12 +35,43 @@ void addtoplayername(struct Cursor* cursor){
 void removefromplayername(){
     if(namecharacterindex>0){
         namecharacterindex--;
-        playername[namecharacterindex] = 0;// replace with space
+        playername[namecharacterindex] = 0;
     }
 }
 
 void drawplayername(){
     set_bkg_tiles(1, 4, 18, 1, playername);
+}
+
+void updateplayername(struct Cursor* cursor){
+    if(cursor->col==8 && cursor->row==4){
+        // delete
+        removefromplayername();
+        drawplayername();
+    }
+    else if(cursor->col==9 && cursor->row==4){
+        // player finished
+        playerhasname = 1;
+    }
+    else{
+        // add to player name
+        addtoplayername(cursor);
+        drawplayername();
+    }
+}
+
+UBYTE isWithinKeyboard(UINT8 x, UINT8 y){
+    if(x==140 && y==144 || x==156 && y==144){
+        return 1;
+    }
+    return x >= mincursorx && x <= maxcursorx && y >=mincursory && y <= maxcursory;
+}
+
+void resetcharactername(){
+    for(i=0;i!=18;i++){
+        playername[i] = 0x00;
+    }
+    playerhasname = 0;
 }
 
 void sayhelloscreen(){
@@ -73,32 +85,10 @@ void sayhelloscreen(){
     HIDE_SPRITES;
     DISPLAY_ON;
 
-    waitpad(J_SELECT);
-    // invalidate the first character in save
-    playername[0] = 0xFF;
-    main();
-}
-
-void updateplayername(struct Cursor* cursor){
-    // check if cursor at delete or done
-    if(cursor->col==8 && cursor->row == 4){
-        // delete
-        removefromplayername();
-        drawplayername();
-    }
-    else if (cursor->col==9 && cursor->row == 4){
-        // player finished
-        playerhasname = 1;
-    }
-    else{
-        addtoplayername(cursor);
-        drawplayername();
-    }
 }
 
 void askfornamescreen(){
-    resetplayername();
-
+    resetcharactername();
     // load cursor sprite
     set_sprite_data(0, 1, sprites);
     set_sprite_tile(0, 0);
@@ -117,9 +107,6 @@ void askfornamescreen(){
     SHOW_SPRITES;
     DISPLAY_ON;
 
-    drawplayername();
-    
-
     while(!playerhasname){
         if(keydown){
             waitpadup();
@@ -130,9 +117,9 @@ void askfornamescreen(){
             case J_UP:
                 if(isWithinKeyboard(cursor.x, cursor.y - 16)){
                     cursor.y -= 16;
+                    cursor.row--;
                     scroll_sprite(0,0,-16);
                     keydown = 1;
-                    cursor.row--;
                 }
                 break;
             case J_DOWN: 
@@ -161,25 +148,24 @@ void askfornamescreen(){
                 break;
             case J_A:
                 updateplayername(&cursor);
-                keydown = 1;                
+                keydown = 1;
                 break;
-        }
-        performantdelay(2);
+        }  
+
+        performantdelay(2);   
     }
-    scroll_bkg(4,0); // reset bg position
+    scroll_bkg(4,0);
     return;
 }
 
 void main(){
     ENABLE_RAM_MBC1;
 
-    // there are 40 different characters on kb
-    // so if value greater than 40 (hex 28) cant be valid data
-    // so name must be empty
-
     if(playername[0]>0x28){
         askfornamescreen();
     }
+
     sayhelloscreen();
+    
     DISABLE_RAM_MBC1;
 }

@@ -1,1 +1,2 @@
-unsigned char playername[18];
+#include <gb/gb.h>
+UINT8 playername[18];

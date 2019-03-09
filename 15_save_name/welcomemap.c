@@ -8,7 +8,7 @@
    Section       : 
    Bank          : 0
    Map size      : 20 x 18
-   Tile set      : C:\git\GamingMonstersGameBoySampleCode\14_save_name\keyboard.gbr
+   Tile set      : C:\git\GamingMonstersGameBoySampleCode\15_save_name\keyboard.gbr
    Plane count   : 1 plane (8 bits)
    Plane order   : Tiles are continues
    Tile offset   : 0
