@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "cgb.h": "c",
+        "gb.h": "c",
+        "stdio.h": "c"
+    }
+}
