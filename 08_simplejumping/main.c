@@ -1,11 +1,11 @@
 #include <gb/gb.h>
 #include <stdio.h>
 
-INT8 playerlocation[2]; // stores two INT8 x and y position of player
+UINT8 playerlocation[2]; // stores two INT8 x and y position of player
 BYTE jumping;
 UINT8 gravity = -2;
 UINT8 currentspeedY;
-UINT8 floorYposition = 100;
+UINT8 floorYposition = 139;
 
 unsigned char bloke[] =
 {
@@ -42,7 +42,7 @@ INT8 wouldhitsurface(UINT8 projectedYPosition){
 }
 
 void jump(UINT8 spriteid, UINT8 spritelocation[2]){
-    INT8 possiblesurfaceY;
+    UINT8 possiblesurfaceY;
 
     if(jumping==0){
         jumping=1;
@@ -56,7 +56,7 @@ void jump(UINT8 spriteid, UINT8 spritelocation[2]){
 
     possiblesurfaceY = wouldhitsurface(spritelocation[1]);
 
-    if(possiblesurfaceY > -1){
+    if(possiblesurfaceY != -1){
         jumping = 0;
         move_sprite(spriteid,spritelocation[0],possiblesurfaceY);
     }
