@@ -1,6 +1,6 @@
 /*
 
- EXAMPLESPRITE.H
+ BACKGROUNDDATA.H
 
  Include File.
 
@@ -10,7 +10,7 @@
   Compression          : None.
   Counter              : None.
   Tile size            : 8 x 8
-  Tiles                : 0 to 0
+  Tiles                : 0 to 3
 
   Palette colors       : None.
   SGB Palette          : None.
@@ -24,8 +24,8 @@
 
 
 /* Bank of tiles. */
-#define ExampleSpriteBank 0
+#define BackgroundDataBank 0
 /* Start of tile array. */
-extern unsigned char ExampleSprite[];
+extern unsigned char BackgroundData[];
 
-/* End of EXAMPLESPRITE.H */
+/* End of BACKGROUNDDATA.H */
