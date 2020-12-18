@@ -1,9 +1,8 @@
-c:\gbdk\bin\lcc -Wa-l -Wl-m -Wl-j -c -o BackgroundData.o BackgroundData.c
-c:\gbdk\bin\lcc -Wa-l -Wl-m -Wl-j -c -o BackgroundMap.o BackgroundMap.c
-c:\gbdk\bin\lcc -Wa-l -Wl-m -Wl-j  -c -o main.o main.c
-c:\gbdk\bin\lcc -Wa-l -Wl-m -Wl-j -Wl-yp0x143=0x80 -o gbcbackground.gb BackgroundMap.o BackgroundData.o main.o
-
-DEL *.lst
-DEL *.o
-DEL *.map
-DEL *.sym
+@REM you should pass --debug to frontend (Wf--debug)
+@REM you should pass -y to the linker to make it create a CDB file used for debugging (-Wl-y )
+@REM and also pass -m -w to the linker to produce "wide maps" that are useful for emulicious (-Wl-m)
+@REM add -Wl-j if you want to create NoICE symbol file .NOI for use in BGB emulator
+c:\gbdk2020\bin\lcc -Wa-l -Wl-m -Wf--debug -Wl-y -Wl-w -c -o BackgroundData.o BackgroundData.c
+c:\gbdk2020\bin\lcc -Wa-l -Wl-m -Wf--debug -Wl-y -Wl-w -c -o BackgroundMap.o BackgroundMap.c
+c:\gbdk2020\bin\lcc -Wa-l -Wl-m -Wf--debug -Wl-y -Wl-w -c -o main.o main.c
+c:\gbdk2020\bin\lcc -Wa-l -Wl-m -Wf--debug -Wl-y -Wl-w -Wm-yc -o gbcbackground.gbc BackgroundMap.o BackgroundData.o main.o
